@@ -1,0 +1,85 @@
+// 1) Добавить структуру `TransferAccounts` хранящую два аккаунта: отправителя и получателя
+// 2) Добавить функцию перевода средств `transfer()`, которая:
+// Принимает структуру `TransferAccounts` и сумму перевода. Возвращает структуру `TransferAccounts`.
+// Проверяет, что у отправителя достаточно средств. Если нет - возвращает `TransferAccounts` без изменений.
+// Выполняет операцию Withdraw для отправителя и Deposit для получателя.
+// Возвращает `TransferAccounts`, содержащий аккаунты с обновлёнными балансами.
+
+/// Счёт клиента в банке
+struct BankAccount {
+    balance: u32, // может быть unsigned, так как всегда >= 0
+}
+
+/// Операции с банковским счётом
+enum Operation {
+    Deposit(u32),
+    Withdraw(u32),
+    Nullify,
+}
+
+struct TransferAccounts {
+    sender: BankAccount,
+    recipient: BankAccount,
+}
+
+fn transfer(accounts: TransferAccounts, amount: u32) -> TransferAccounts {
+    if accounts.sender.balance < amount {
+        return accounts;
+    }
+
+    TransferAccounts {
+        sender: operate(accounts.sender, Operation::Withdraw(amount)),
+        recipient: operate(accounts.recipient, Operation::Deposit(amount)),
+    }
+}
+
+/// Принимает аккаунт, обновляет его, и возвращает обновлённые данные
+fn operate(mut account: BankAccount, operation: Operation) -> BankAccount {
+    match operation {
+        // выполняем операцию в соответствии с входными данными
+        Operation::Deposit(amount) => {
+            account.balance += amount;
+        }
+        Operation::Withdraw(amount) => {
+            account.balance -= amount;
+        }
+        Operation::Nullify => {
+            account.balance = 0;
+        }
+    }
+
+    account
+}
+
+fn main() {
+    let rich_account = BankAccount { balance: 100 };
+    let poor_account = BankAccount { balance: 10 };
+
+    let rich_account = operate(rich_account, Operation::Deposit(100));
+    let poor_account = operate(poor_account, Operation::Withdraw(1));
+
+    println!("rich account balance: {}", rich_account.balance);
+    println!("poor account balance: {}", poor_account.balance);
+
+    let nullified_account = operate(rich_account, Operation::Nullify);
+    println!("nullified account balance: {}", nullified_account.balance);
+
+    let accounts = TransferAccounts {
+        sender: BankAccount { balance: 100 },
+        recipient: BankAccount { balance: 0 },
+    };
+
+    println!(
+        "sender balance - {}, recipient balance - {}",
+        accounts.sender.balance, accounts.recipient.balance
+    );
+
+    let accounts = transfer(accounts, 100);
+
+    println!(
+        "new sender balance - {}, new recipient balance - {}",
+        accounts.sender.balance, accounts.recipient.balance
+    );
+}
+
+

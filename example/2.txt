@@ -1,0 +1,65 @@
+// fn main() {
+//     print_each_item(&[1, 2, 3, 4]);
+// }
+
+// fn print_each_item(slice: &[i32]) {
+//     for item in slice {
+//         println!("item: {item}")
+//     }
+// }
+
+// В этом задании тебе необходимо реализовать приложение, которое совершает перевод средств между пользователями:
+
+// Описан тип представляющий аккаунт пользователя, хранящий его баланс.
+// Описать функцию transfer, которая принимает:
+// Аккаунт отправителя;
+// Слайс аккаунтов получателей;
+// Сумму перевода;
+// Для каждого получатееля, баланс отправителя уменьшается на сумму перевода, а баланс получателя - увеличивается.
+
+// В функции main создать несколько аккаунтов и совершить перевод средств.
+// Проверить балансы после перевода и вывести в терминал сообщение в случае ошибки
+
+struct BankAccount {
+    balance: u32,
+}
+
+// fn check_balance(balance: u32, amount: u32) {
+
+// }
+
+fn transfer(sender: &mut BankAccount, recipients: &mut [&mut BankAccount], amount: u32) {
+    for recipient in recipients {
+        if sender.balance < amount {
+            println!("Выполнить перевод не возможно, у отправителя недостаточно средств. Переводы завершены");
+
+            break;
+        }
+
+        sender.balance -= amount;
+        recipient.balance += amount;
+
+        println!(
+            "Перевод осуществлен. Баланс отправителя - {}, баланс получателя - {}",
+            sender.balance, recipient.balance
+        );
+    }
+}
+
+fn main() {
+    let mut sender = BankAccount { balance: 500 };
+    let mut recipient_1 = BankAccount { balance: 1000 };
+    let mut recipient_2 = BankAccount { balance: 2000 };
+    let mut recipient_3 = BankAccount { balance: 3000 };
+
+    transfer(
+        &mut sender,
+        &mut [&mut recipient_1, &mut recipient_2, &mut recipient_3],
+        100,
+    );
+
+    println!("Итоговый результат отправителя - {}", sender.balance);
+    println!("Итоговый результат получателя 1 - {}", recipient_1.balance);
+    println!("Итоговый результат получателя 2 - {}", recipient_2.balance);
+    println!("Итоговый результат получателя 3 - {}", recipient_3.balance);
+}
